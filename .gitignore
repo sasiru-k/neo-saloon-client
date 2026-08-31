@@ -38,7 +38,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+next-env.d.ts // meka thiyana nisa gitignore eke chnages track krnne nah
 
 /app/generated/prisma
 .claude
