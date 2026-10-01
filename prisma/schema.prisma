@@ -21,8 +21,9 @@ model User {
   lastName String
   password String
   role String @default("CUSTOMER")
-  status String @default("Active")// ACTIVE, BANNED, SUSPENDED
+  // status String @default("Active")// ACTIVE, BANNED, SUSPENDED // menna methana create wena users lata waradi widiyata thanmai "Active"  kiyala watenne. meka fix kre nathnatm oyata me waradda digatama ewi.
+  status String @default("ACTIVE") // fixed. In upcoming sessions you will learn about enum s in prisma, that will help you to prevent this kind of issues in a more professional way.
   createdAT DateTime @default(now())
   lastLogin DateTime?
-  privileges String[] @default([]) 
+  privileges String[] @default([]) // "users:add", "users:edit", "users:read"
 }// gender, emailVerified, phoneVerified
