@@ -3,6 +3,7 @@ import { UserRegistrationRequestSchema } from "@/types/dto/UserRegistrationReque
 import { UserSelfUpdateRequestSchema } from "@/types/dto/UserSelfUpdateRequest";
 import { UserUpdateByAdminRequestSchema } from "@/types/dto/UserUpdatedByAdminRequest";
 import { getUser, isPrivileged } from "@/utils/authentication";
+import getPaginationInfo from "@/utils/pageinfoRetrieval";
 import bcrypt from "bcryptjs";
 import { count } from "console";
 import { NextRequest, NextResponse } from "next/server";
@@ -25,18 +26,13 @@ export async function GET(request : NextRequest){
         }
 
 
-        const pageNumberInString = request.nextUrl.searchParams.get("pageNumber")||"1"
-
-        const pageSizeInString = request.nextUrl.searchParams.get("pageSize")||"10"
-
-        const pageNumber = parseInt(pageNumberInString)
-        const pageSize = parseInt(pageSizeInString)//50
+        const params = getPaginationInfo(request)
 
         const userCount = await prisma.user.count()//999
 
-        const totalPages = Math.ceil( userCount / pageSize )
+        const totalPages = Math.ceil( userCount / params.pageSize )
 
-        if(pageNumber > totalPages){
+        if(params.pageNumber > totalPages){
             return NextResponse.json(
                 {
                     message : "Page number exceeds total pages",
@@ -49,8 +45,8 @@ export async function GET(request : NextRequest){
         }
 
         const users = await prisma.user.findMany({
-            skip : ( pageNumber - 1 ) * pageSize,
-            take : pageSize,
+            skip : ( params.pageNumber - 1 ) * params.pageSize,
+            take : params.pageSize,
             select : {
                 id : true,
                 email : true,
@@ -72,10 +68,10 @@ export async function GET(request : NextRequest){
          return NextResponse.json(
              {
                  message : "Users fetched successfully",
-                 users : users,
+                 data : users,
                  pagination : {
-                    pageNumber : pageNumber,
-                    pageSize : pageSize,
+                    pageNumber : params.pageNumber,
+                    pageSize : params.pageSize,
                     totalPages : totalPages,
                     totalCount : userCount
                  }
